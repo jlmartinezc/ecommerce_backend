@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "title": "PS5",
+    "price": "300",
+    "thumbail": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg"
+  },
+  {
+    "id": 2,
+    "title": "PS5",
+    "price": "300",
+    "thumbail": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg"
+  }
+]

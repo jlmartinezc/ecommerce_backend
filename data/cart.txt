@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "timeStamp": "22/05/2022 22:28:22",
+    "productos": [
+      {
+        "id": 1,
+        "asddddddd": "saddas"
+      },
+      {
+        "id": 2,
+        "title": "xbox"
+      },
+      {
+        "id": 3,
+        "title": "play"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "timeStamp": "23/05/2022 16:54:19",
+    "productos": {}
+  }
+]
