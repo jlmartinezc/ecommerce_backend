@@ -18,9 +18,9 @@ class CartService {
         }  
     }
 
-    async saveCart(products){
+    async saveCart(cart){
         try{
-            await fs.promises.writeFile(this.filePath, products);
+            await fs.promises.writeFile(this.filePath, cart);
         }
         catch(err){
             return {'Error': err};

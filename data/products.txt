@@ -1,14 +1,31 @@
 [
   {
     "id": 1,
-    "title": "PS5",
-    "price": "300",
-    "thumbail": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg"
+    "timestamp": "24/05/2022 21:57:35",
+    "nombre": "xbox",
+    "descripcion": "xbox",
+    "codigo": "01",
+    "foto": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+    "precio": "300",
+    "stock": "25"
   },
   {
     "id": 2,
-    "title": "PS5",
-    "price": "300",
-    "thumbail": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg"
+    "nombre": "Playstation 5",
+    "descripcion": "Playstation 5",
+    "codigo": "02",
+    "foto": "https://gmedia.playstation.com/is/image/SIEPDC/ps5-product-thumbnail-01-en-14sep21?$facebook$",
+    "precio": "299",
+    "stock": "10"
+  },
+  {
+    "id": 3,
+    "timestamp": "24/05/2022 22:19:34",
+    "nombre": "Nintendo Switch",
+    "descripcion": "Nintendo Switch",
+    "codigo": "03",
+    "foto": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+    "precio": "299",
+    "stock": "15"
   }
 ]

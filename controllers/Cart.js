@@ -1,6 +1,7 @@
 class Cart {
-    constructor(cartService){
+    constructor(cartService, productService){
         this.cartService = cartService;
+        this.productService = productService;
     }
 
     async getProductsOnCart(id){
@@ -24,22 +25,26 @@ class Cart {
 
     async createCart(){
         const timeStamp = this.#getTimeStamp();
-        let allCarts = JSON.parse(await this.cartService.getCart());
-
-        allCarts = (allCarts == '' || allCarts == undefined && allCarts == null) ? '' : allCarts;
-
+        let allCarts = await this.cartService.getCart();
+        
+        allCarts = (allCarts == '' || allCarts == undefined && allCarts == null) ? '' : JSON.parse(allCarts);
+        
+        const id = this.#incrementId(allCarts);
+        
         let cart = {
             'timeStamp': timeStamp,
-            'productos': {}
+            'productos': []
         };
 
-        const id = this.#incrementId(allCarts, cart);
-        allCarts.push({'id': id, ...cart});
+        (allCarts)
+        ? allCarts.push({'id': id, ...cart})
+        : allCarts = [{'id': id, ...cart}];
+        
         allCarts = JSON.stringify(allCarts, null, 2);
 
-        await this.cartService.saveCart(allCarts);
-
-        return `Se creo un nuevo carrito con id ${id}`;
+        return await this.cartService.saveCart(allCarts)
+        .then(() => `Se creo un nuevo carrito con id ${id}`)
+        .catch(error => "Ocurrio un fallo al crear el carrito");
     }
 
     async deleteCart(id){
@@ -55,33 +60,42 @@ class Cart {
             let cartsFiltered = allCarts.filter((cart) => cart.id != id);
             cartsFiltered = JSON.stringify(cartsFiltered, null, 2);
 
-            await this.cartService.saveCart(cartsFiltered);
-            return
-            
+            return await this.cartService.saveCart(cartsFiltered)
+            .then(() => `Se elimino el carrito con id ${id}`)
+            .catch(error => "Ocurrio un fallo al eliminar el producto");
         }
         catch(err){
             return {'Error': err};
         }  
     }
 
-    async addProductToCart(id, producto){
+    async addProductToCart(id, id_prod){
         try{            
             let allCarts = JSON.parse(await this.cartService.getCart());
             if(allCarts == '' || allCarts == undefined && allCarts == null){
                 return {'Error': 'No se encontró ningún carrito'}
             }
-
+            
             id = this.#validateId(id);
+            id_prod = this.#validateId(id_prod);
 
+            const producto = await this.#getProduct(id_prod);
+            if(producto.error){
+                return producto
+            }
+            
             allCarts.map(cart => {
                 if(cart.id == id){
-                    cart.productos.push({'id': this.#incrementId(cart.productos), ...producto}) 
+                    cart.productos.push({...producto})
                 }
             });
             
             allCarts = JSON.stringify(allCarts, null, 2);
-            await this.cartService.saveCart(allCarts);
-            return;
+            
+            return await this.cartService.saveCart(allCarts)
+            .then(() => 'Se agrego un nuevo prodcuto al carrito')
+            .catch(error => "Ocurrio un fallo al agregar el producto");
+            
         }
         catch(err){
             return {'Error': err};
@@ -105,12 +119,27 @@ class Cart {
             });
             
             allCarts = JSON.stringify(allCarts, null, 2);
-            await this.cartService.saveCart(allCarts);
-            return;
+
+            return await this.cartService.saveCart(allCarts)
+            .then(() => 'Se elimino un producto del carrito')
+            .catch(error => "Ocurrio un fallo al al eliminar un producto");
         }
         catch(err){
             return {'Error': err};
         }  
+    }
+
+    async #getProduct(id){
+        let allProducts = await this.productService.getProducts();
+
+        if(allProducts == '' || allProducts == undefined && allProducts == null){
+            return {'Error': 'No se encontró ningún producto'}
+        }
+
+        allProducts = JSON.parse(allProducts);
+
+        let product = allProducts.find(product => product.id == id)
+        return (product) ? product : {error : 'Producto no encontrado'};
     }
 
     #validateId(id){
@@ -135,10 +164,9 @@ class Cart {
         return dateTime;
     }
 
-    #incrementId(products){
-        if(!products) return 1; 
-               
-        return Math.max(...products.map(product => product.id)) + 1;   
+    #incrementId(carts){
+        if(!carts) return 1; 
+        return Math.max(...carts.map(cart => cart.id)) + 1;   
     }
 }
 

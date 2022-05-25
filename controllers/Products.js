@@ -29,11 +29,18 @@ class Products {
         let products = await this.getProducts();  
         products = (products.Error) ? '' : products;
 
-        let newProduct = await this.#incrementId(products, data);
-        newProduct = JSON.stringify(newProduct, null, 2);
+        let id = await this.#incrementId(products);
+        let dateTime = this.#getTimeStamp();
 
-        await this.productProvider.saveProducts(newProduct);
-        return;
+        (products)
+        ? products.push({'id': id, 'timestamp': dateTime, ...data})
+        : products = [{'id': id, 'timestamp': dateTime, ...data}];
+
+        products = JSON.stringify(products, null, 2);
+        
+        return await this.productProvider.saveProducts(products)
+        .then(() => "El producto fue creado exitosamente")
+        .catch(error => "Ocurrio un fallo al crear el producto");        
     }
 
     async updateProduct(id, data){
@@ -51,7 +58,9 @@ class Products {
 
             updatedProduct = JSON.stringify(updatedProduct, null, 2);
 
-            await this.productProvider.saveProducts(updatedProduct);
+            return await this.productProvider.saveProducts(updatedProduct)
+            .then(() => "El producto fue actualizado exitosamente")
+            .catch(error => "Ocurrio un fallo al actualizar el producto");
 
         }
         catch(err){
@@ -71,22 +80,19 @@ class Products {
             let productsFiltered = products.filter((product) => product.id != id);
             productsFiltered = JSON.stringify(productsFiltered, null, 2);
 
-            await this.productProvider.saveProducts(productsFiltered);
-            return
-            
+            return await this.productProvider.saveProducts(productsFiltered)
+            .then(() => "El producto fue eliminado exitosamente")
+            .catch(error => "Ocurrio un fallo al eliminar el producto");            
         }
         catch(err){
             return {'Error': err};
         }  
     }
 
-    async #incrementId(products, product){
-        if(!products) return [{'id': 1, ...product}]; 
+    async #incrementId(products){
+        if(!products) return 1;     
 
-        const id = Math.max(...products.map(product => product.id)) + 1;
-        products.push({'id': id, ...product});
-        
-        return products;        
+        return Math.max(...products.map(product => product.id)) + 1;        
     }
 
     #validateId(id){
@@ -96,6 +102,24 @@ class Products {
     #findProduct(products, id){
         let product = products.find(product => product.id == id)
         return (product) ? product : {error : 'Producto no encontrado'};
+    }
+
+    #getTimeStamp(){
+        const date = new Date();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        const getDate = [day, month, year].join('/');
+        const getTime = [hours, minutes, seconds].join(':');
+
+        const dateTime = `${getDate} ${getTime}`;
+
+        return dateTime;
     }
 }
 
