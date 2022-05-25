@@ -12,7 +12,7 @@ class Cart {
                 return {'Error': 'No se encontró ningún carrito'}
             }
             
-            id = this.#validateId(id);
+            id = this.validateId(id);
             allCarts = JSON.parse(allCarts);
 
             const cart = allCarts.find(cart => cart.id == id);
@@ -24,12 +24,12 @@ class Cart {
     }
 
     async createCart(){
-        const timeStamp = this.#getTimeStamp();
+        const timeStamp = this.getTimeStamp();
         let allCarts = await this.cartService.getCart();
         
         allCarts = (allCarts == '' || allCarts == undefined && allCarts == null) ? '' : JSON.parse(allCarts);
         
-        const id = this.#incrementId(allCarts);
+        const id = this.incrementId(allCarts);
         
         let cart = {
             'timeStamp': timeStamp,
@@ -55,7 +55,7 @@ class Cart {
                 return {'Error': 'No se encontró ningún carrito'}
             }
 
-            id = this.#validateId(id);
+            id = this.validateId(id);
 
             let cartsFiltered = allCarts.filter((cart) => cart.id != id);
             cartsFiltered = JSON.stringify(cartsFiltered, null, 2);
@@ -76,10 +76,10 @@ class Cart {
                 return {'Error': 'No se encontró ningún carrito'}
             }
             
-            id = this.#validateId(id);
-            id_prod = this.#validateId(id_prod);
+            id = this.validateId(id);
+            id_prod = this.validateId(id_prod);
 
-            const producto = await this.#getProduct(id_prod);
+            const producto = await this.getProduct(id_prod);
             if(producto.error){
                 return producto
             }
@@ -109,8 +109,8 @@ class Cart {
                 return {'Error': 'No se encontró ningún carrito'}
             }
 
-            id = this.#validateId(id);
-            id_prod = this.#validateId(id_prod);
+            id = this.validateId(id);
+            id_prod = this.validateId(id_prod);
 
             allCarts.map(cart => {
                 if(cart.id == id){
@@ -129,7 +129,7 @@ class Cart {
         }  
     }
 
-    async #getProduct(id){
+    async getProduct(id){
         let allProducts = await this.productService.getProducts();
 
         if(allProducts == '' || allProducts == undefined && allProducts == null){
@@ -142,11 +142,11 @@ class Cart {
         return (product) ? product : {error : 'Producto no encontrado'};
     }
 
-    #validateId(id){
+    validateId(id){
         return (id.trim() !== '' && id !== undefined && id !== null) ? parseInt(id) : '';
     }
 
-    #getTimeStamp(){
+    getTimeStamp(){
         const date = new Date();
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -164,7 +164,7 @@ class Cart {
         return dateTime;
     }
 
-    #incrementId(carts){
+    incrementId(carts){
         if(!carts) return 1; 
         return Math.max(...carts.map(cart => cart.id)) + 1;   
     }

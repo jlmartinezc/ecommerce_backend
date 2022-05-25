@@ -5,7 +5,7 @@ class Products {
 
     async getProducts(id = '') {
         try{
-            id = this.#validateId(id);
+            id = this.validateId(id);
             let allProducts = await this.productProvider.getProducts();
 
             if(allProducts == '' || allProducts == undefined && allProducts == null){
@@ -15,7 +15,7 @@ class Products {
             allProducts = JSON.parse(allProducts);
 
             if(id) {
-                return this.#findProduct(allProducts, id);
+                return this.findProduct(allProducts, id);
             }
 
             return allProducts;
@@ -29,8 +29,8 @@ class Products {
         let products = await this.getProducts();  
         products = (products.Error) ? '' : products;
 
-        let id = await this.#incrementId(products);
-        let dateTime = this.#getTimeStamp();
+        let id = await this.incrementId(products);
+        let dateTime = this.getTimeStamp();
 
         (products)
         ? products.push({'id': id, 'timestamp': dateTime, ...data})
@@ -45,7 +45,7 @@ class Products {
 
     async updateProduct(id, data){
         try{
-            id = this.#validateId(id);
+            id = this.validateId(id);
             const products = await this.getProducts();  
 
             if(products.Error){
@@ -70,7 +70,7 @@ class Products {
 
     async deleteProduct(id){
         try{
-            id = this.#validateId(id);
+            id = this.validateId(id);
             const products = await this.getProducts();      
                
             if(products.Error){
@@ -89,22 +89,22 @@ class Products {
         }  
     }
 
-    async #incrementId(products){
+    async incrementId(products){
         if(!products) return 1;     
 
         return Math.max(...products.map(product => product.id)) + 1;        
     }
 
-    #validateId(id){
+    validateId(id){
         return (id.trim() !== '' && id !== undefined && id !== null) ? parseInt(id) : '';
     }
 
-    #findProduct(products, id){
+    findProduct(products, id){
         let product = products.find(product => product.id == id)
         return (product) ? product : {error : 'Producto no encontrado'};
     }
 
-    #getTimeStamp(){
+    getTimeStamp(){
         const date = new Date();
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
